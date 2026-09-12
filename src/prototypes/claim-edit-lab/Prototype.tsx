@@ -37,7 +37,7 @@ const BROAD_RULE_SHARE = 0.25
 // min-w-0 lets a <select> shrink below its widest option, so a grid row of
 // three controls shares the width instead of squeezing the last one to nothing.
 const CONTROL =
-  'type-body min-h-11 min-w-0 rounded-[--radius-control] border border-line bg-ground px-3 text-ink focus:border-line-strong focus:outline-none'
+  'type-body min-h-11 min-w-0 rounded-[--radius-control] border border-line bg-ground px-3 text-ink focus:border-line-strong'
 
 const EMPTY_RULE: Rule = { conditions: [], action: { kind: 'deny' } }
 
@@ -320,7 +320,7 @@ function ConditionRow({
           size="sm"
           aria-label="Remove condition"
           onClick={onRemove}
-          className="sm:order-last"
+          className="min-w-11 sm:order-last"
         >
           ×
         </Button>
