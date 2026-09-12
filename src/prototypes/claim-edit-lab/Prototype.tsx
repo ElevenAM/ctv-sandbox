@@ -1,15 +1,9 @@
-"use client";
+'use client'
 
-import { useId, useMemo, useState } from "react";
-import { cn } from "@/lib/cn";
-import {
-  Button,
-  EmptyState,
-  FailedState,
-  FilteredEmptyState,
-  Tag,
-} from "@/components/ui/primitives";
-import { SAMPLE, type ClaimLine } from "./sample";
+import { useId, useMemo, useState } from 'react'
+import { cn } from '@/lib/cn'
+import { Button, EmptyState, FailedState, FilteredEmptyState, Tag } from '@/components/ui/primitives'
+import { SAMPLE, type ClaimLine } from './sample'
 import {
   evaluate,
   FIELDS,
@@ -21,7 +15,7 @@ import {
   type Condition,
   type Field,
   type Rule,
-} from "./rules";
+} from './rules'
 
 /*
   Claim Edit Lab. Client state only: the sample is a seeded module, the rule
@@ -30,86 +24,79 @@ import {
   that cannot be evaluated, rendered in place on the offending row.
 */
 
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
+const money = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
   maximumFractionDigits: 0,
-});
-const percent = (n: number, of: number) =>
-  of === 0 ? "0%" : `${Math.round((100 * n) / of)}%`;
+})
+const percent = (n: number, of: number) => (of === 0 ? '0%' : `${Math.round((100 * n) / of)}%`)
 
 /** Above this share of the sample, a rule is more likely wrong than lucrative. */
-const BROAD_RULE_SHARE = 0.25;
+const BROAD_RULE_SHARE = 0.25
 
 const CONTROL =
-  "type-body min-h-11 rounded-[--radius-control] border border-line bg-ground px-3 text-ink focus:border-line-strong focus:outline-none";
+  'type-body min-h-11 rounded-[--radius-control] border border-line bg-ground px-3 text-ink focus:border-line-strong focus:outline-none'
 
-const EMPTY_RULE: Rule = { conditions: [], action: { kind: "deny" } };
+const EMPTY_RULE: Rule = { conditions: [], action: { kind: 'deny' } }
 
 function firstValue(field: Field): string {
-  const def = FIELDS[field];
-  return def.kind === "enum" ? def.options[0]! : "";
+  const def = FIELDS[field]
+  return def.kind === 'enum' ? def.options[0]! : ''
 }
 
 function newCondition(): Condition {
   return {
     id: crypto.randomUUID(),
-    field: "service",
-    operator: "is",
-    value: firstValue("service"),
-  };
+    field: 'service',
+    operator: 'is',
+    value: firstValue('service'),
+  }
 }
 
 export default function ClaimEditLab() {
-  const [rule, setRule] = useState<Rule>(EMPTY_RULE);
-  const [showUnflagged, setShowUnflagged] = useState(false);
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
-    "idle",
-  );
+  const [rule, setRule] = useState<Rule>(EMPTY_RULE)
+  const [showUnflagged, setShowUnflagged] = useState(false)
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
 
-  const result = useMemo(() => evaluate(rule, SAMPLE), [rule]);
-  const usable = rule.conditions.length - result.invalid.length;
-  const share = result.flags.length / result.linesTotal;
-  const spec = toSpec(rule);
+  const result = useMemo(() => evaluate(rule, SAMPLE), [rule])
+  const usable = rule.conditions.length - result.invalid.length
+  const share = result.flags.length / result.linesTotal
+  const spec = toSpec(rule)
 
   const update = (id: string, patch: Partial<Condition>) =>
     setRule((r) => ({
       ...r,
-      conditions: r.conditions.map((c) =>
-        c.id === id ? { ...c, ...patch } : c,
-      ),
-    }));
+      conditions: r.conditions.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+    }))
   const remove = (id: string) =>
     setRule((r) => ({
       ...r,
       conditions: r.conditions.filter((c) => c.id !== id),
-    }));
-  const setAction = (action: Action) => setRule((r) => ({ ...r, action }));
+    }))
+  const setAction = (action: Action) => setRule((r) => ({ ...r, action }))
   const load = (next: Rule) => {
-    setRule(structuredClone(next));
-    setCopyState("idle");
-  };
+    setRule(structuredClone(next))
+    setCopyState('idle')
+  }
 
   async function copySpec() {
     try {
-      await navigator.clipboard.writeText(spec);
-      setCopyState("copied");
+      await navigator.clipboard.writeText(spec)
+      setCopyState('copied')
     } catch (err) {
-      console.error("clipboard write refused", err);
-      setCopyState("failed");
+      console.error('clipboard write refused', err)
+      setCopyState('failed')
     }
   }
 
-  const flaggedIds = new Set(result.flags.map((f) => f.line.id));
+  const flaggedIds = new Set(result.flags.map((f) => f.line.id))
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
       {/* The rule ---------------------------------------------------------- */}
-      <section className="flex flex-col gap-5 rounded-[--radius-card] border border-line bg-surface p-4 sm:p-5">
+      <section className="flex min-w-0 flex-col gap-5 rounded-[--radius-card] border border-line bg-surface p-4 sm:p-5">
         <div>
-          <h2 className="type-index mb-3 text-ink-muted">
-            Start from an example
-          </h2>
+          <h2 className="type-index mb-3 text-ink-muted">Start from an example</h2>
           <div className="flex flex-wrap gap-2">
             {PRESETS.map((p) => (
               <Button key={p.name} size="sm" onClick={() => load(p.rule)}>
@@ -121,15 +108,9 @@ export default function ClaimEditLab() {
 
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="type-index text-ink-muted">
-              Flag a line when all of these are true
-            </h2>
+            <h2 className="type-index text-ink-muted">Flag a line when all of these are true</h2>
             {rule.conditions.length > 0 ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => load(EMPTY_RULE)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => load(EMPTY_RULE)}>
                 Clear
               </Button>
             ) : null}
@@ -167,8 +148,8 @@ export default function ClaimEditLab() {
               <input
                 type="radio"
                 name="action"
-                checked={rule.action.kind === "deny"}
-                onChange={() => setAction({ kind: "deny" })}
+                checked={rule.action.kind === 'deny'}
+                onChange={() => setAction({ kind: 'deny' })}
                 className="accent-[var(--ctv-brand)]"
               />
               Deny the line
@@ -177,8 +158,8 @@ export default function ClaimEditLab() {
               <input
                 type="radio"
                 name="action"
-                checked={rule.action.kind === "cap"}
-                onChange={() => setAction({ kind: "cap", maxUnits: 4 })}
+                checked={rule.action.kind === 'cap'}
+                onChange={() => setAction({ kind: 'cap', maxUnits: 4 })}
                 className="accent-[var(--ctv-brand)]"
               />
               Pay at most
@@ -187,15 +168,15 @@ export default function ClaimEditLab() {
                 inputMode="numeric"
                 min={0}
                 aria-label="Maximum units"
-                disabled={rule.action.kind !== "cap"}
-                value={rule.action.kind === "cap" ? rule.action.maxUnits : 4}
+                disabled={rule.action.kind !== 'cap'}
+                value={rule.action.kind === 'cap' ? rule.action.maxUnits : 4}
                 onChange={(e) =>
                   setAction({
-                    kind: "cap",
+                    kind: 'cap',
                     maxUnits: Math.max(0, Number(e.target.value) || 0),
                   })
                 }
-                className={cn(CONTROL, "w-20 disabled:opacity-45")}
+                className={cn(CONTROL, 'w-20 disabled:opacity-45')}
               />
               units
             </label>
@@ -204,55 +185,35 @@ export default function ClaimEditLab() {
 
         <div className="flex flex-col gap-2 border-t border-line pt-4">
           {/* The one primary action: this is what replaces the emailed spreadsheet. */}
-          <Button
-            variant="primary"
-            disabled={rule.conditions.length === 0}
-            onClick={() => void copySpec()}
-          >
-            {copyState === "copied" ? "Copied" : "Copy as spec"}
+          <Button variant="primary" disabled={rule.conditions.length === 0} onClick={() => void copySpec()}>
+            {copyState === 'copied' ? 'Copied' : 'Copy as spec'}
           </Button>
-          {copyState === "failed" ? (
+          {copyState === 'failed' ? (
             <p role="alert" className="type-small text-danger">
-              The browser refused the clipboard. Nothing was lost — the spec is
-              below, select and copy it.
+              The browser refused the clipboard. Nothing was lost — the spec is below, select and copy it.
             </p>
           ) : null}
           <details className="type-small text-ink-muted">
-            <summary className="cursor-pointer py-1">
-              What engineering receives
-            </summary>
+            <summary className="cursor-pointer py-1">What engineering receives</summary>
             <pre className="mt-2 overflow-x-auto rounded-[--radius-control] bg-raised p-3 text-ink-soft">
               {spec}
             </pre>
           </details>
-          <p className="type-small text-ink-muted">
-            This rule is not saved. Refreshing the page clears it.
-          </p>
+          <p className="type-small text-ink-muted">This rule is not saved. Refreshing the page clears it.</p>
         </div>
       </section>
 
       {/* The consequence --------------------------------------------------- */}
       <section className="flex min-w-0 flex-col gap-5">
         <div className="grid grid-cols-3 gap-3">
-          <Stat
-            label="Lines flagged"
-            value={`${result.flags.length} / ${result.linesTotal}`}
-          />
-          <Stat
-            label="Would have saved"
-            value={money.format(result.savingsTotal)}
-          />
-          <Stat
-            label="Of dollars paid"
-            value={percent(result.savingsTotal, result.paidTotal)}
-          />
+          <Stat label="Lines flagged" value={`${result.flags.length} / ${result.linesTotal}`} />
+          <Stat label="Would have saved" value={money.format(result.savingsTotal)} />
+          <Stat label="Of dollars paid" value={percent(result.savingsTotal, result.paidTotal)} />
         </div>
         <p className="type-small text-ink-muted">
-          Estimated gross savings on this synthetic sample of{" "}
-          {result.linesTotal} lines. Before appeals, not annualised.
-          {rule.action.kind === "cap"
-            ? " Capping assumes every unit was paid the same."
-            : ""}
+          Estimated gross savings on this synthetic sample of {result.linesTotal} lines. Before appeals, not
+          annualised.
+          {rule.action.kind === 'cap' ? ' Capping assumes every unit was paid the same.' : ''}
         </p>
 
         {usable > 0 && share > BROAD_RULE_SHARE ? (
@@ -260,9 +221,8 @@ export default function ClaimEditLab() {
             role="status"
             className="type-small rounded-[--radius-control] border border-line bg-raised px-4 py-3 text-ink"
           >
-            This rule flags {percent(result.flags.length, result.linesTotal)} of
-            the sample. Broad rules cause provider disputes; consider tightening
-            it.
+            This rule flags {percent(result.flags.length, result.linesTotal)} of the sample. Broad rules cause
+            provider disputes; consider tightening it.
           </p>
         ) : null}
 
@@ -292,22 +252,19 @@ export default function ClaimEditLab() {
                 onChange={(e) => setShowUnflagged(e.target.checked)}
                 className="accent-[var(--ctv-brand)]"
               />
-              Show the {result.linesTotal - result.flags.length} lines this rule
-              leaves alone
+              Show the {result.linesTotal - result.flags.length} lines this rule leaves alone
             </label>
             <ClaimTable
               lines={showUnflagged ? SAMPLE : result.flags.map((f) => f.line)}
               flaggedIds={flaggedIds}
-              savingsById={
-                new Map(result.flags.map((f) => [f.line.id, f.savings]))
-              }
+              savingsById={new Map(result.flags.map((f) => [f.line.id, f.savings]))}
               because={result.flags[0]?.because ?? []}
             />
           </>
         )}
       </section>
     </div>
-  );
+  )
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -318,7 +275,7 @@ function Stat({ label, value }: { label: string; value: string }) {
         {value}
       </div>
     </div>
-  );
+  )
 }
 
 function ConditionRow({
@@ -327,13 +284,13 @@ function ConditionRow({
   onChange,
   onRemove,
 }: {
-  condition: Condition;
-  invalid: boolean;
-  onChange: (patch: Partial<Condition>) => void;
-  onRemove: () => void;
+  condition: Condition
+  invalid: boolean
+  onChange: (patch: Partial<Condition>) => void
+  onRemove: () => void
 }) {
-  const id = useId();
-  const def = FIELDS[condition.field];
+  const id = useId()
+  const def = FIELDS[condition.field]
   return (
     <li className="flex flex-col gap-1">
       <div className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_1fr_1fr_auto]">
@@ -341,12 +298,12 @@ function ConditionRow({
           aria-label="Field"
           value={condition.field}
           onChange={(e) => {
-            const field = e.target.value as Field;
+            const field = e.target.value as Field
             onChange({
               field,
               operator: operatorsFor(field)[0],
               value: firstValue(field),
-            });
+            })
           }}
           className={CONTROL}
         >
@@ -368,10 +325,8 @@ function ConditionRow({
         <select
           aria-label="Comparison"
           value={condition.operator}
-          onChange={(e) =>
-            onChange({ operator: e.target.value as Condition["operator"] })
-          }
-          className={CONTROL}
+          onChange={(e) => onChange({ operator: e.target.value as Condition['operator'] })}
+          className={cn(CONTROL, 'col-span-2 sm:col-span-1')}
         >
           {operatorsFor(condition.field).map((op) => (
             <option key={op} value={op}>
@@ -379,12 +334,12 @@ function ConditionRow({
             </option>
           ))}
         </select>
-        {def.kind === "enum" ? (
+        {def.kind === 'enum' ? (
           <select
             aria-label="Value"
             value={condition.value}
             onChange={(e) => onChange({ value: e.target.value })}
-            className={CONTROL}
+            className={cn(CONTROL, 'col-span-2 sm:col-span-1')}
           >
             {def.options.map((o) => (
               <option key={o} value={o}>
@@ -404,8 +359,8 @@ function ConditionRow({
             placeholder="number"
             className={cn(
               CONTROL,
-              "placeholder:text-ink-muted",
-              invalid && "border-danger",
+              'col-span-2 min-w-0 placeholder:text-ink-muted sm:col-span-1',
+              invalid && 'border-danger',
             )}
           />
         )}
@@ -416,7 +371,7 @@ function ConditionRow({
         </p>
       ) : null}
     </li>
-  );
+  )
 }
 
 function ClaimTable({
@@ -425,10 +380,10 @@ function ClaimTable({
   savingsById,
   because,
 }: {
-  lines: readonly ClaimLine[];
-  flaggedIds: Set<string>;
-  savingsById: Map<string, number>;
-  because: string[];
+  lines: readonly ClaimLine[]
+  flaggedIds: Set<string>
+  savingsById: Map<string, number>
+  because: string[]
 }) {
   return (
     <div className="overflow-x-auto rounded-[--radius-card] border border-line">
@@ -436,16 +391,16 @@ function ClaimTable({
         <thead className="type-index text-ink-muted">
           <tr className="border-b border-line">
             {[
-              "Claim",
-              "Service",
-              "Modifier",
-              "Place",
-              "Diagnosis",
-              "Units",
-              "Age",
-              "Paid",
-              "Saves",
-              "Why",
+              'Claim',
+              'Service',
+              'Modifier',
+              'Place',
+              'Diagnosis',
+              'Units',
+              'Age',
+              'Paid',
+              'Saves',
+              'Why',
             ].map((h) => (
               <th key={h} scope="col" className="px-3 py-2.5 font-normal">
                 {h}
@@ -455,23 +410,18 @@ function ClaimTable({
         </thead>
         <tbody>
           {lines.map((l) => {
-            const flagged = flaggedIds.has(l.id);
+            const flagged = flaggedIds.has(l.id)
             return (
               <tr
                 key={l.id}
                 className={cn(
-                  "border-b border-line last:border-0",
-                  flagged ? "bg-raised text-ink" : "text-ink-soft",
+                  'border-b border-line last:border-0',
+                  flagged ? 'bg-raised text-ink' : 'text-ink-soft',
                 )}
               >
                 <td className="px-3 py-2.5">
                   <span className="inline-flex items-center gap-2">
-                    {flagged ? (
-                      <span
-                        aria-hidden
-                        className="size-1.5 rounded-full bg-jade"
-                      />
-                    ) : null}
+                    {flagged ? <span aria-hidden className="size-1.5 rounded-full bg-jade" /> : null}
                     <span className="type-index whitespace-nowrap">{l.id}</span>
                   </span>
                 </td>
@@ -484,11 +434,9 @@ function ClaimTable({
                   {l.memberAge}
                   {l.memberSex}
                 </td>
+                <td className="px-3 py-2.5 tabular-nums">{money.format(l.paid)}</td>
                 <td className="px-3 py-2.5 tabular-nums">
-                  {money.format(l.paid)}
-                </td>
-                <td className="px-3 py-2.5 tabular-nums">
-                  {flagged ? money.format(savingsById.get(l.id) ?? 0) : "—"}
+                  {flagged ? money.format(savingsById.get(l.id) ?? 0) : '—'}
                 </td>
                 <td className="px-3 py-2.5">
                   {flagged ? (
@@ -500,14 +448,14 @@ function ClaimTable({
                       ))}
                     </span>
                   ) : (
-                    "—"
+                    '—'
                   )}
                 </td>
               </tr>
-            );
+            )
           })}
         </tbody>
       </table>
     </div>
-  );
+  )
 }
