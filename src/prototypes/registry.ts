@@ -1,6 +1,7 @@
 import type { PrototypeEntry } from './types'
 import { meta as signalBoard } from './signal-board/meta'
 import { meta as tokenLab } from './token-lab/meta'
+import { meta as claimEditLab } from './claim-edit-lab/meta'
 
 /**
  * THE catalogue. Every prototype in the library is listed here exactly once.
@@ -15,6 +16,7 @@ import { meta as tokenLab } from './token-lab/meta'
 export const PROTOTYPES: readonly PrototypeEntry[] = [
   { ...signalBoard, load: () => import('./signal-board/Prototype') },
   { ...tokenLab, load: () => import('./token-lab/Prototype') },
+  { ...claimEditLab, load: () => import('./claim-edit-lab/Prototype') },
 ]
 
 export function findPrototype(slug: string): PrototypeEntry | undefined {
