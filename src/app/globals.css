@@ -1,0 +1,268 @@
+@import 'tailwindcss';
+
+/*
+  CTV Sandbox design system.
+  DESIGN.md is the binding spec; this file is its implementation.
+
+  Two rules do the heavy lifting:
+  1. Never write a raw hex or a bare font-size in a component — spend a token.
+  2. Every token is defined once on :root, then REDEFINED (never newly
+     introduced) in the dark block. A colour that exists in only one theme is
+     the bug that makes a page unreadable for half its visitors.
+*/
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ----------------------------------------------------------------- light -- */
+:root {
+  color-scheme: light dark;
+
+  /* Surfaces, back to front. */
+  --ctv-ground: oklch(97.5% 0.005 90);
+  --ctv-surface: oklch(100% 0 0);
+  --ctv-raised: oklch(99% 0.003 90);
+  --ctv-line: oklch(90% 0.006 90);
+  --ctv-line-strong: oklch(80% 0.008 90);
+
+  /* Text, by emphasis. `muted` is the floor — never go quieter for real copy. */
+  --ctv-ink: oklch(21% 0.012 260);
+  --ctv-ink-soft: oklch(44% 0.012 260);
+  --ctv-ink-muted: oklch(57% 0.012 260);
+
+  /* Accents. These five names are the SAME five as board_note.tone in
+     supabase/migrations/0002 — the palette and the CHECK constraint agree. */
+  --ctv-amber: oklch(72% 0.16 68);
+  --ctv-iris: oklch(62% 0.17 282);
+  --ctv-jade: oklch(66% 0.13 165);
+  --ctv-rose: oklch(65% 0.19 12);
+  --ctv-slate: oklch(60% 0.03 250);
+
+  /* Exactly one brand fill per screen (DESIGN.md §4). */
+  --ctv-brand: oklch(58% 0.19 282);
+  --ctv-brand-ink: oklch(99% 0 0);
+
+  /* State colours, semantic not decorative. */
+  --ctv-danger: oklch(58% 0.21 22);
+  --ctv-success: oklch(58% 0.14 158);
+
+  --ctv-focus: oklch(58% 0.19 282);
+  --ctv-shadow: 0 1px 2px oklch(20% 0.02 260 / 0.06), 0 8px 24px oklch(20% 0.02 260 / 0.06);
+}
+
+/* ------------------------------------------------------------------ dark -- */
+/* Default for "system", plus the explicit toggle. Both blocks only REDEFINE. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ctv-ground: oklch(15% 0.008 265);
+    --ctv-surface: oklch(18.5% 0.009 265);
+    --ctv-raised: oklch(22% 0.01 265);
+    --ctv-line: oklch(27% 0.011 265);
+    --ctv-line-strong: oklch(38% 0.014 265);
+
+    --ctv-ink: oklch(96% 0.004 265);
+    --ctv-ink-soft: oklch(76% 0.008 265);
+    --ctv-ink-muted: oklch(62% 0.01 265);
+
+    --ctv-amber: oklch(80% 0.14 72);
+    --ctv-iris: oklch(76% 0.13 282);
+    --ctv-jade: oklch(78% 0.12 168);
+    --ctv-rose: oklch(75% 0.15 14);
+    --ctv-slate: oklch(72% 0.02 250);
+
+    --ctv-brand: oklch(70% 0.15 282);
+    --ctv-brand-ink: oklch(16% 0.01 282);
+
+    --ctv-danger: oklch(70% 0.17 22);
+    --ctv-success: oklch(74% 0.13 160);
+
+    --ctv-focus: oklch(78% 0.13 282);
+    --ctv-shadow: 0 1px 2px oklch(0% 0 0 / 0.4), 0 12px 32px oklch(0% 0 0 / 0.35);
+  }
+}
+
+:root[data-theme='dark'] {
+  --ctv-ground: oklch(15% 0.008 265);
+  --ctv-surface: oklch(18.5% 0.009 265);
+  --ctv-raised: oklch(22% 0.01 265);
+  --ctv-line: oklch(27% 0.011 265);
+  --ctv-line-strong: oklch(38% 0.014 265);
+
+  --ctv-ink: oklch(96% 0.004 265);
+  --ctv-ink-soft: oklch(76% 0.008 265);
+  --ctv-ink-muted: oklch(62% 0.01 265);
+
+  --ctv-amber: oklch(80% 0.14 72);
+  --ctv-iris: oklch(76% 0.13 282);
+  --ctv-jade: oklch(78% 0.12 168);
+  --ctv-rose: oklch(75% 0.15 14);
+  --ctv-slate: oklch(72% 0.02 250);
+
+  --ctv-brand: oklch(70% 0.15 282);
+  --ctv-brand-ink: oklch(16% 0.01 282);
+
+  --ctv-danger: oklch(70% 0.17 22);
+  --ctv-success: oklch(74% 0.13 160);
+
+  --ctv-focus: oklch(78% 0.13 282);
+  --ctv-shadow: 0 1px 2px oklch(0% 0 0 / 0.4), 0 12px 32px oklch(0% 0 0 / 0.35);
+}
+
+/* ------------------------------------------------- tailwind token bridge -- */
+/* `inline` so the utilities resolve the live variable, and one class swap
+   re-themes the whole tree without rebuilding CSS. */
+@theme inline {
+  --color-ground: var(--ctv-ground);
+  --color-surface: var(--ctv-surface);
+  --color-raised: var(--ctv-raised);
+  --color-line: var(--ctv-line);
+  --color-line-strong: var(--ctv-line-strong);
+
+  --color-ink: var(--ctv-ink);
+  --color-ink-soft: var(--ctv-ink-soft);
+  --color-ink-muted: var(--ctv-ink-muted);
+
+  --color-amber: var(--ctv-amber);
+  --color-iris: var(--ctv-iris);
+  --color-jade: var(--ctv-jade);
+  --color-rose: var(--ctv-rose);
+  --color-slate: var(--ctv-slate);
+
+  --color-brand: var(--ctv-brand);
+  --color-brand-ink: var(--ctv-brand-ink);
+  --color-danger: var(--ctv-danger);
+  --color-success: var(--ctv-success);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius-card: 14px;
+  --radius-control: 10px;
+
+  /* Motion. Anything longer than `slow` reads as lag, not polish. */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 380ms;
+}
+
+/* ------------------------------------------------------------- typography -- */
+/*
+  The type scale lives here as `.type-*` roles. Components spend a role; they
+  never write `text-[19px]` or a bare font-weight. A new size is a DESIGN.md
+  change, not a one-off in a component.
+*/
+@layer components {
+  .type-display {
+    font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    font-weight: 560;
+  }
+  .type-title {
+    font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);
+    line-height: 1.12;
+    letter-spacing: -0.022em;
+    font-weight: 550;
+  }
+  .type-heading {
+    font-size: 1.125rem;
+    line-height: 1.3;
+    letter-spacing: -0.014em;
+    font-weight: 550;
+  }
+  .type-body {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    letter-spacing: -0.006em;
+    font-weight: 400;
+  }
+  .type-small {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  /* The catalogue voice: index codes, tags, metadata. Always uppercase. */
+  .type-index {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+}
+
+/* ------------------------------------------------------------------ base -- */
+@layer base {
+  * {
+    border-color: var(--ctv-line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--ctv-ground);
+    color: var(--ctv-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Visible focus is not optional and is never removed for looks. */
+  :focus-visible {
+    outline: 2px solid var(--ctv-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--ctv-brand);
+    color: var(--ctv-brand-ink);
+  }
+
+  /* Respect the OS setting — motion is decoration, never the only signal. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* --------------------------------------------------------------- utility -- */
+@layer utilities {
+  /* The faint blueprint grid behind the library header. Decorative only:
+     aria-hidden at the call site, and it never carries meaning. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--ctv-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--ctv-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 75%);
+  }
+
+  /* Skeletons pulse; they never masquerade as content. */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--ctv-raised) 0%,
+      var(--ctv-line) 50%,
+      var(--ctv-raised) 100%
+    );
+    background-size: 200% 100%;
+    animation: ctv-shimmer 1.4s ease-in-out infinite;
+  }
+
+  @keyframes ctv-shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+}

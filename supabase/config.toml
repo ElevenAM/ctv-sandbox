@@ -1,0 +1,41 @@
+# Supabase project config for ctv-sandbox.
+#
+# Version-controlled so the hosted project's settings are reviewable in a diff
+# instead of living only as dashboard clicks. Push with:
+#   supabase login && supabase link --project-ref thibkcpuvbskzznconzg
+#   supabase config push
+project_id = "ctv-sandbox"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000", "https://ctv-sandbox.vercel.app"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+
+# LOAD-BEARING for every DB-backed prototype in this repo.
+# Anonymous sign-in is how a visitor gets a real `auth.uid()`, which is what
+# makes the RLS in supabase/migrations genuine row isolation rather than a
+# client-side convention. With this off, DB prototypes render their failed
+# state on purpose (see src/prototypes/signal-board) instead of faking success.
+enable_anonymous_sign_ins = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false

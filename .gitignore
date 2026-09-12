@@ -1,0 +1,21 @@
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# env — .env.example is the tracked contract, real values never are
+.env
+.env*.local
+
+.vercel/
+.supabase/
+*.tsbuildinfo
+next-env.d.ts
+
+.DS_Store
+*.log
+coverage/
+
+# local scratch
+Archive/
