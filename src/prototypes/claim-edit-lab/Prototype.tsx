@@ -34,8 +34,10 @@ const percent = (n: number, of: number) => (of === 0 ? '0%' : `${Math.round((100
 /** Above this share of the sample, a rule is more likely wrong than lucrative. */
 const BROAD_RULE_SHARE = 0.25
 
+// min-w-0 lets a <select> shrink below its widest option, so a grid row of
+// three controls shares the width instead of squeezing the last one to nothing.
 const CONTROL =
-  'type-body min-h-11 rounded-[--radius-control] border border-line bg-ground px-3 text-ink focus:border-line-strong focus:outline-none'
+  'type-body min-h-11 min-w-0 rounded-[--radius-control] border border-line bg-ground px-3 text-ink focus:border-line-strong focus:outline-none'
 
 const EMPTY_RULE: Rule = { conditions: [], action: { kind: 'deny' } }
 
@@ -293,7 +295,7 @@ function ConditionRow({
   const def = FIELDS[condition.field]
   return (
     <li className="flex flex-col gap-1">
-      <div className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1fr_1fr_1fr_auto]">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
         <select
           aria-label="Field"
           value={condition.field}
@@ -359,7 +361,7 @@ function ConditionRow({
             placeholder="number"
             className={cn(
               CONTROL,
-              'col-span-2 min-w-0 placeholder:text-ink-muted sm:col-span-1',
+              'col-span-2 placeholder:text-ink-muted sm:col-span-1',
               invalid && 'border-danger',
             )}
           />

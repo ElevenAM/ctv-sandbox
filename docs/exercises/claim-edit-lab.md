@@ -119,4 +119,12 @@ The condition-row editor. Build it first as an ugly three-select row wired to `e
 - CMS DE-SynPUF, the public synthetic claims files, considered and rejected as the sample because real codes contradict the "simplified codes" decision. https://www.cms.gov/data-research/statistics-trends-and-reports/medicare-claims-synthetic-public-use-files/cms-2008-2010-data-entrepreneurs-synthetic-public-use-file-de-synpuf/de10-sample-1
 
 ## Outcome
-Filled in at the end: what shipped, what was cut, what is unverified.
+**Live:** https://ctv-sandbox.vercel.app/p/claim-edit-lab (opened and driven on 2026-09-12, zero console errors).
+
+**Shipped:** rank 1 and rank 2. Flat AND rule builder, deny or cap-units action, seeded sample of 150 lines, instant re-evaluation, why-tags on every flagged line, the two presets, the 25% broad-rule warning, and Copy as spec with the spec always visible underneath.
+
+**Cut:** rank 3 (fetching the sample so a network failure is demonstrable). The sample stays a static module; the honest failure surface is an invalid condition, rendered on its own row and skipped so the table keeps the last good result.
+
+**Seen in a browser:** both presets (13 / 150 and $984 with the cap assumption line; 8 / 150 with deny), filtered-empty on a rule that matches nothing, the in-row "Needs a number" error, the 83% broad-rule warning, and the clipboard-refused fallback. No horizontal scroll at 375px. Gate green.
+
+**Unverified:** the clipboard *success* path. The embedded browser pane refuses clipboard writes, so only the refusal branch was observed. The failure copy and the visible spec make the button safe either way.

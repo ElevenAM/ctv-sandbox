@@ -21,7 +21,7 @@ States on the results surface: **empty** (no conditions), **failed** (only unusa
 - "Telehealth visit billed at the office" flags 8 / 150 with deny.
 - Changing the place to "emergency" renders the filtered-empty state; switching a field to Units with a blank value renders the in-row "Needs a number" error and skips that condition.
 - Zero console errors.
-- Deployed URL: see the Outcome section of the PRD.
+- Deployed: https://ctv-sandbox.vercel.app/p/claim-edit-lab, driven after deploy with the same results. The clipboard success path is unverified; the embedded browser pane refuses writes, so only the in-place fallback was seen.
 
 ## Known ceilings
 - **Flat AND only.** No OR groups, no code-pair edits, no member-history edits. Those are the two most valuable real edit families; each is a second evaluation model and a second form.
