@@ -19,6 +19,14 @@ The single most important thing this repo does is turn work into a link. An inte
 
 4. **First deploy only — create and link the project.** Use the Vercel MCP (team `elevenams-projects-85623585`):
    - `create_git_project` pointed at `github.com/ElevenAM/ctv-sandbox`, framework `nextjs`.
+   - **Known boundary (observed 2026-09-11):** this MCP connection can *read*
+     projects and deployments but `create_git_project` returns
+     `403 forbidden — You don't have permission to create the project`. Project
+     creation is the owner's to do, once, in the dashboard or with the CLI:
+     `npx vercel link` then `npx vercel --prod`. Do not route around it by
+     falling back to `deploy_to_vercel` — that makes a bare, git-unlinked
+     project, which loses push-to-deploy and is worse than asking. Once the
+     project exists and is linked, everything after this step works over MCP.
    - Set the environment variables. **Both are `NEXT_PUBLIC_` and safe to set:**
      - `NEXT_PUBLIC_SUPABASE_URL` = `https://thibkcpuvbskzznconzg.supabase.co`
      - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` = the `sb_publishable_…` key from `get_publishable_keys`

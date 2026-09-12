@@ -84,6 +84,23 @@ Prototypes that do not touch the database work without this, by design.
 
 **One manual step** for the database-backed prototypes: Supabase dashboard → **Authentication → Sign In / Providers** → enable **Anonymous sign-ins**. It is what gives each visitor a real `auth.uid()`, which is what makes the RLS genuine. Already set in [`supabase/config.toml`](supabase/config.toml), so `supabase config push` does it too once the CLI is logged in. Until then `/p/signal-board` renders its failed state and names this fix — which is the behaviour we want from a failure, not a bug.
 
+## Deploying
+
+Push-to-deploy, once the Vercel project exists. Creating it is a one-time owner
+action — dashboard → Add New → Project → import `ElevenAM/ctv-sandbox`, or:
+
+```bash
+npx vercel link && npx vercel --prod
+```
+
+Then set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+in the project's environment variables. **Never** add a service-role or
+`sb_secret_` key — nothing here reads one, and a secret in a `NEXT_PUBLIC_`
+variable ships to every visitor's browser.
+
+After that, `/ship` handles it: gate, commit, push, watch the build, and open
+the deployed page to verify it actually renders.
+
 ## Stack
 
 Next.js 16 (App Router) · React 19 · TypeScript strict · Tailwind v4 · Supabase (Postgres 17, RLS, Realtime) · Vercel · pnpm · Node 22 via fnm.
