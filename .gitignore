@@ -20,4 +20,9 @@ coverage/
 # local scratch
 Archive/
 .vercel
+
+# Appended by tooling. `.env*` is the right default, but .env.example is the
+# tracked contract a fresh clone copies from — negate it explicitly so the file
+# cannot quietly vanish from the repo if it is ever deleted and recreated.
 .env*
+!.env.example
