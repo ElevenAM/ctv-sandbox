@@ -19,3 +19,5 @@ coverage/
 
 # local scratch
 Archive/
+.vercel
+.env*

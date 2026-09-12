@@ -17,7 +17,7 @@ There is no GitHub Actions workflow on this repo, so this is CI. A green gate is
    - `get_advisors` (security) on `thibkcpuvbskzznconzg` — must return an empty list. A new `WARN` is a blocking regression, not a note for later.
    - `get_advisors` (performance) — report findings; blocking only if a new index would be cheap.
    - Confirm `pnpm db:types` was run: `git diff --stat src/lib/supabase/database.types.ts` should be non-empty if `supabase/migrations/` changed in the same commit. `ci-local.sh` prints a warning for this, which is easy to scroll past — check it.
-   - Spot-check RLS on any new table: it is enabled, and the insert policy has a `with check`.
+   - **`pnpm check:rls`** — the two-anon-client negatives. Spot-checking a policy by reading it is not the same as watching the database refuse a write; this is the difference between RLS that is real and RLS that looks real. Extend `scripts/check-rls.mjs` with a case for any new table.
 
 3. **Browser check — the part that is actually load-bearing.** Compiling is not working.
    - `preview_start` the dev server (or open the deployed URL if the work is shipped).

@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "gate": "bash scripts/ci-local.sh",
     "new": "node scripts/new-prototype.mjs",
-    "db:types": "supabase gen types typescript --project-id thibkcpuvbskzznconzg > src/lib/supabase/database.types.ts"
+    "db:types": "supabase gen types typescript --project-id thibkcpuvbskzznconzg > src/lib/supabase/database.types.ts",
+    "check:rls": "node scripts/check-rls.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

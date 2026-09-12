@@ -14,9 +14,13 @@ Living state. Keep it short — this is Now and Parked, not a diary.
   drive it over MCP.
 
 ## Parked
-- **No test suite yet.** `vitest` is installed and `pnpm test` is wired, but nothing is written. The first prototype with non-trivial pure logic should bring the first test — `src/lib/color.ts` (contrast maths) is the obvious candidate.
-- **`pgTAP` RLS negatives.** The RLS in `supabase/migrations/` is reviewed but not *tested* — there is no two-anon-client negative proving one visitor cannot delete another's note. Worth adding before any prototype here holds something that matters.
-- **Anonymous sign-in is a manual dashboard toggle** until the Supabase CLI is logged in on this machine (`supabase login`, then `supabase config push` picks it up from `config.toml`).
+- **No unit test suite yet.** `vitest` is installed and `pnpm test` is wired, but nothing is written. The first prototype with non-trivial pure logic should bring the first test — `src/lib/color.ts` (contrast maths) is the obvious candidate. Note the RLS side is now covered by `pnpm check:rls`.
+- **`supabase config push` is still unavailable** — the CLI is not logged in on this machine, so `supabase/config.toml` is version-controlled but not the thing actually applying settings. Dashboard changes are the source of truth until `supabase login` happens.
 
 ## Log
+- `2026-09-12` — Anonymous sign-in enabled on the project. Verified the whole
+  multiplayer path end to end in a browser: post, realtime INSERT across two
+  tabs, realtime DELETE, and the correct fall back to the empty state. Added
+  `pnpm check:rls` — ten two-anon-client negatives, all passing, proving the
+  database *refuses* cross-user writes rather than the UI merely hiding them.
 - `2026-09-11` — Repo created. Next 16 + Supabase + Vercel + design system + registry + 6 skills + 6 MCP servers. Two reference prototypes (EX-01 signal-board, EX-02 token-lab). Gate green.

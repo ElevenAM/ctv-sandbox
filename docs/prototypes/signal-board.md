@@ -20,6 +20,15 @@ Client-side throughout, because anonymous auth and the realtime socket both need
 
 `visitorRef` mirrors the visitor for that callback, which closes over its first render — assigned beside the setter, never from an effect (rule 6). The mount fetch carries an `isCurrent` cancellation guard (rule 7).
 
+## Verified
+`2026-09-12`, against the live project in a browser:
+
+- Post → the note round-trips and renders with its tone accent.
+- **Realtime INSERT** — a note posted in tab two appears in tab one with no reload.
+- **Realtime DELETE** — removing it in tab one clears it from tab two, and the board falls back to the *empty* state (not a stale loading or failed state).
+- **RLS**, via `pnpm check:rls`: 10/10. A second visitor cannot post as the first (`403`, `with check` doing its job), cannot delete or edit their note (0 rows affected), and cannot read their `prototype_state`. A signed-out visitor can still read the board.
+- Zero console errors on a tab opened after anonymous sign-in was enabled.
+
 ## Known ceilings
 - **Loads 60 notes, no pagination.** Past that the board silently truncates to the newest. Add a cursor if it ever matters — for a demo, it does not.
 - **Optimistic reconciliation matches on `author_id` + `body`.** Posting the same text twice in quick succession can drop the wrong placeholder. A client-generated id round-tripped through the insert would fix it; not worth the column here.

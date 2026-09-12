@@ -44,9 +44,10 @@ src/
                      nothing else breaks.
 supabase/migrations/ Numbered SQL. RLS on every table, no exceptions.
 docs/                Templates, briefs, decisions. See docs/README.md.
-scripts/             new-prototype.mjs (scaffold) · ci-local.sh (the gate).
-.claude/skills/      /new-prototype · /ship · /gate · /screen-review ·
-                     /ponytail-review · /exercise-brief
+scripts/             new-prototype.mjs (scaffold) · ci-local.sh (the gate) ·
+                     check-rls.mjs (RLS negatives) · dev.sh (PATH bootstrap).
+.claude/skills/      /exercise-brief · /new-prototype · /design-research ·
+                     /ship · /gate · /screen-review · /ponytail-review
 .mcp.json            Supabase · Vercel · Mobbin · Figma · Chrome · Playwright.
 ```
 
@@ -57,6 +58,7 @@ scripts/             new-prototype.mjs (scaffold) · ci-local.sh (the gate).
 - **The gate: `pnpm gate`** — typecheck + lint + build, in that order. This is CI. Run it before you claim anything works and before every push.
 - `pnpm dev` · `pnpm typecheck` · `pnpm lint` · `pnpm build` · `pnpm test`
 - **`pnpm new <slug>`** — scaffolds a prototype and registers it. Always use this; it assigns the next index code and writes the registry line correctly.
+- **`pnpm check:rls`** — ten two-anon-client negatives against the live project, proving the database refuses what the UI declines to offer. Run after any migration that touches a policy. Not in `pnpm gate` because it needs the network.
 - `pnpm db:types` — regenerate `src/lib/supabase/database.types.ts` after **every** migration (rule 12).
 - Node comes from fnm. `.claude/settings.json` puts it on `PATH` for tool calls; a bare shell needs `eval "$(fnm env)"` first.
 
@@ -138,7 +140,7 @@ A prototype is done when **all** of these hold:
 - [ ] `pnpm gate` passes (typecheck, lint, build).
 - [ ] It is **live at a URL** and you have opened that URL yourself.
 - [ ] All four data states are reachable, and you have seen the failed one — unplug the network or flip the env var and look.
-- [ ] Every table it added has RLS and `get_advisors` is clean.
+- [ ] Every table it added has RLS, `get_advisors` is clean, and `pnpm check:rls` passes.
 - [ ] `database.types.ts` matches the migrations.
 - [ ] It has a brief in `docs/prototypes/<slug>.md` (`/exercise-brief` writes one).
 - [ ] The landed diff sits on the highest ladder rung that holds.

@@ -45,6 +45,7 @@ Delete the folder and the registry line and nothing else breaks.
 | **Supabase** | Browser + server + middleware clients, generated types, anonymous visitor auth so RLS is real. |
 | **Two shared tables** | `prototype_state` (per-visitor scratch — persist without a migration) and `prototype_signal` (append-only telemetry). |
 | **The gate** | `pnpm gate` = typecheck + lint + build. There is no GitHub Actions here; this is CI. |
+| **RLS negatives** | `pnpm check:rls` signs in two anonymous visitors and proves the database *refuses* cross-user writes. Hiding a button is not security. |
 | **Scaffold** | `pnpm new <slug>` — folder, registry entry, brief stub, next index code. |
 
 ## Reference prototypes
@@ -82,7 +83,9 @@ cp .env.example .env.local
 
 Prototypes that do not touch the database work without this, by design.
 
-**One manual step** for the database-backed prototypes: Supabase dashboard → **Authentication → Sign In / Providers** → enable **Anonymous sign-ins**. It is what gives each visitor a real `auth.uid()`, which is what makes the RLS genuine. Already set in [`supabase/config.toml`](supabase/config.toml), so `supabase config push` does it too once the CLI is logged in. Until then `/p/signal-board` renders its failed state and names this fix — which is the behaviour we want from a failure, not a bug.
+**Anonymous sign-in must be on** for the database-backed prototypes — it is what gives each visitor a real `auth.uid()`, which is what makes the RLS genuine. It is **enabled** on the `ctv-sandbox` project and verified working. On a fresh project: dashboard → **Authentication → Sign In / Providers** → enable **Anonymous sign-ins** (it needs an explicit Save). Already set in [`supabase/config.toml`](supabase/config.toml), so `supabase config push` does it too once the CLI is logged in.
+
+With it off, `/p/signal-board` renders its failed state and names the exact fix rather than spinning forever — which is the behaviour we want from a failure, not a bug. `pnpm check:rls` detects the same condition and says so.
 
 ## Deploying
 
